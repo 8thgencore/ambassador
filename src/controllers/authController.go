@@ -56,7 +56,7 @@ func Login(ctx *fiber.Ctx) error {
 
 	database.DB.Where("email = ?", data["email"]).First(&user)
 
-	if user.ID == 0 {
+	if user.Id == 0 {
 		ctx.Status(fiber.StatusBadRequest)
 		return ctx.JSON(fiber.Map{
 			"message": "User not found",
@@ -72,7 +72,7 @@ func Login(ctx *fiber.Ctx) error {
 
 	// JWT
 	payload := jwt.StandardClaims{
-		Subject:   strconv.Itoa(int(user.ID)),
+		Subject:   strconv.Itoa(int(user.Id)),
 		ExpiresAt: time.Now().Add(time.Hour * 24).Unix(),
 	}
 
@@ -135,11 +135,11 @@ func UpdateInfo(ctx *fiber.Ctx) error {
 	id, _ := middlewares.GetUserId(ctx)
 
 	user := models.User{
-		ID:        id,
 		FirstName: data["first_name"],
 		LastName:  data["last_name"],
 		Email:     data["email"],
 	}
+	user.Id = id
 
 	database.DB.Model(&user).Updates(&user)
 
@@ -162,9 +162,8 @@ func UpdatePassword(ctx *fiber.Ctx) error {
 
 	id, _ := middlewares.GetUserId(ctx)
 
-	user := models.User{
-		ID: id,
-	}
+	user := models.User{}
+	user.Id = id
 
 	user.SetPassword(data["password"])
 
