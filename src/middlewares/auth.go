@@ -2,40 +2,68 @@ package middlewares
 
 import (
 	"strconv"
+	"strings"
+	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
 )
 
+const SecretKey = "secret"
+
+type ClaimsWithScope struct {
+	jwt.StandardClaims
+	Scope string
+}
+
 func IsAuthenticated(ctx *fiber.Ctx) error {
 	cookie := ctx.Cookies("jwt")
 
-	token, err := jwt.ParseWithClaims(cookie, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
+	token, err := jwt.ParseWithClaims(cookie, &ClaimsWithScope{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SecretKey), nil
 	})
 
 	if err != nil || !token.Valid {
-		ctx.Status(fiber.StatusBadRequest)
+		ctx.Status(fiber.StatusUnauthorized)
 		return ctx.JSON(fiber.Map{
-			"message": "Unauthenticated",
+			"message": "unauthenticated",
+		})
+	}
+
+	payload := token.Claims.(*ClaimsWithScope)
+	isAmbassador := strings.Contains(ctx.Path(), "/api/ambassador")
+
+	if (payload.Scope == "admin" && isAmbassador) || (payload.Scope == "ambassador" && !isAmbassador) {
+		ctx.Status(fiber.StatusUnauthorized)
+		return ctx.JSON(fiber.Map{
+			"message": "unauthorized",
 		})
 	}
 
 	return ctx.Next()
 }
 
+func GenerateJWT(id uint, scope string) (string, error) {
+	payload := ClaimsWithScope{}
+	payload.Subject = strconv.Itoa(int(id))
+	payload.ExpiresAt = time.Now().Add(time.Hour * 24).Unix()
+	payload.Scope = scope
+
+	return jwt.NewWithClaims(jwt.SigningMethodHS256, payload).SignedString([]byte(SecretKey))
+}
+
 func GetUserId(ctx *fiber.Ctx) (uint, error) {
 	cookie := ctx.Cookies("jwt")
 
-	token, err := jwt.ParseWithClaims(cookie, &jwt.RegisteredClaims{}, func(token *jwt.Token) (interface{}, error) {
-		return []byte("secret"), nil
+	token, err := jwt.ParseWithClaims(cookie, &ClaimsWithScope{}, func(token *jwt.Token) (interface{}, error) {
+		return []byte(SecretKey), nil
 	})
 
 	if err != nil {
 		return 0, err
 	}
 
-	payload := token.Claims.(*jwt.RegisteredClaims)
+	payload := token.Claims.(*ClaimsWithScope)
 
 	id, _ := strconv.Atoi(payload.Subject)
 
