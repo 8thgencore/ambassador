@@ -13,6 +13,11 @@ import (
 	"github.com/gofiber/fiber/v2"
 )
 
+var (
+	products_frontend = "products_frontend"
+	products_backend  = "products_backend"
+)
+
 func Products(ctx *fiber.Ctx) error {
 	var products []models.Product
 
@@ -75,7 +80,7 @@ func ProductsFrontend(ctx *fiber.Ctx) error {
 	var products []models.Product
 	var c = context.Background()
 
-	result, err := database.Cache.Get(c, "products_frontend").Result()
+	result, err := database.Cache.Get(c, products_frontend).Result()
 
 	if err != nil {
 		database.DB.Find(&products)
@@ -85,7 +90,7 @@ func ProductsFrontend(ctx *fiber.Ctx) error {
 			panic(err)
 		}
 
-		if errKey := database.Cache.Set(c, "products_frontend", bytes, 30*time.Minute).Err(); errKey != nil {
+		if errKey := database.Cache.Set(c, products_frontend, bytes, 30*time.Minute).Err(); errKey != nil {
 			panic(errKey)
 		}
 	} else {
@@ -99,7 +104,7 @@ func ProductsBackend(ctx *fiber.Ctx) error {
 	var products []models.Product
 	var c = context.Background()
 
-	result, err := database.Cache.Get(c, "products_backend").Result()
+	result, err := database.Cache.Get(c, products_backend).Result()
 
 	if err != nil {
 		database.DB.Find(&products)
@@ -109,7 +114,7 @@ func ProductsBackend(ctx *fiber.Ctx) error {
 			panic(err)
 		}
 
-		if errKey := database.Cache.Set(c, "products_backend", bytes, 30*time.Minute).Err(); errKey != nil {
+		if errKey := database.Cache.Set(c, products_backend, bytes, 30*time.Minute).Err(); errKey != nil {
 			panic(errKey)
 		}
 	} else {
@@ -145,5 +150,25 @@ func ProductsBackend(ctx *fiber.Ctx) error {
 		}
 	}
 
-	return ctx.JSON(searchedProducts)
+	// paginating
+	var total = len(searchedProducts)
+	page, _ := strconv.Atoi(ctx.Query("page", "1"))
+	perPage := 9
+
+	var data []models.Product = searchedProducts
+
+	if total <= page*perPage && total >= (page-1)*perPage {
+		data = searchedProducts[(page-1)*perPage : total]
+	} else if total >= page*perPage {
+		data = searchedProducts[(page-1)*perPage : page*perPage]
+	} else {
+		data = []models.Product{}
+	}
+
+	return ctx.JSON(fiber.Map{
+		"data":      data,
+		"total":     total,
+		"page":      page,
+		"last_page": total/perPage + 1,
+	})
 }
