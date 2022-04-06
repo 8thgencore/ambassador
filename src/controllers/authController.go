@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"ambassador/src/database"
-	"ambassador/src/middlewares"
+	"ambassador/src/middleware"
 	"ambassador/src/models"
 	"strings"
 	"time"
@@ -87,7 +87,7 @@ func Login(ctx *fiber.Ctx) error {
 	}
 
 	// JWT
-	token, err := middlewares.GenerateJWT(user.Id, scope)
+	token, err := middleware.GenerateJWT(user.Id, scope)
 
 	if err != nil {
 		ctx.Status(fiber.StatusBadRequest)
@@ -112,7 +112,7 @@ func Login(ctx *fiber.Ctx) error {
 }
 
 func User(ctx *fiber.Ctx) error {
-	id, _ := middlewares.GetUserId(ctx)
+	id, _ := middleware.GetUserId(ctx)
 
 	var user models.User
 
@@ -149,7 +149,7 @@ func UpdateInfo(ctx *fiber.Ctx) error {
 		return err
 	}
 
-	id, _ := middlewares.GetUserId(ctx)
+	id, _ := middleware.GetUserId(ctx)
 
 	user := models.User{
 		FirstName: data["first_name"],
@@ -177,7 +177,7 @@ func UpdatePassword(ctx *fiber.Ctx) error {
 		})
 	}
 
-	id, _ := middlewares.GetUserId(ctx)
+	id, _ := middleware.GetUserId(ctx)
 
 	user := models.User{}
 	user.Id = id
