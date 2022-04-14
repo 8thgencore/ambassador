@@ -91,3 +91,15 @@ func Stats(ctx *fiber.Ctx) error {
 
 	return ctx.JSON(result)
 }
+
+func GetLink(ctx *fiber.Ctx) error {
+	code := ctx.Params("code")
+
+	link := models.Link{
+		Code: code,
+	}
+
+	database.DB.Preload("User").Preload("Products").First(&link)
+
+	return ctx.JSON(link)
+}
