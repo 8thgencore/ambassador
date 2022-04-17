@@ -1,5 +1,5 @@
 package internal
 
 func StripeSecretKey() string {
-	return "sk_test_51KpCMAL00pWqimbjZ2liesGgC1xdS7tfAIOU43sGh0iMZbS2OQMITKEUQGdzjSZpU6ZxdDsz8eQ9AiJNNPS1bsCr00AGhBDrOd"
+	return "sk_test_51KpCMAL"
 }
