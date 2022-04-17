@@ -5,7 +5,7 @@ type Order struct {
 	TransactionId   string      `json:"transaction_id" gorm:"null"`
 	UserId          uint        `json:"user_id"`
 	Code            string      `json:"code"`
-	AmbassadroEmail string      `json:"ambassador_email"`
+	AmbassadorEmail string      `json:"ambassador_email"`
 	FirstName       string      `json:"-"`
 	LastName        string      `json:"-"`
 	Name            string      `json:"name" gorm:"-"`
