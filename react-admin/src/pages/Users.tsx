@@ -10,22 +10,20 @@ import {
     TableHead,
     TablePagination,
     TableRow,
-} from "@material-ui/core";
+} from "@mui/material";
 
 const Users = () => {
-    const [users, setUsers] = useState<User[]>([]);
-    const [page, setPage] = useState(0);
-    const perPage = 10;
-
-    let ambassadorsUrl = 'ambassadors'
+    const [users, setUsers] = useState<User[]>([])
+    const [page, setPage] = useState(0)
+    const perPage = 10
 
     useEffect(() => {
         (async () => {
-            const { data } = await axios.get(ambassadorsUrl);
+            const { data } = await axios.get('ambassadors')
 
-            setUsers(data);
-        })();
-    }, []);
+            setUsers(data)
+        })()
+    }, [])
 
     return (
         <Layout>

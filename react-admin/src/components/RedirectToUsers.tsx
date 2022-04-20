@@ -1,3 +1,3 @@
-import { Redirect } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 
-export const RedirectToUsers = () => <Redirect to={'/users'}></Redirect>
+export const RedirectToUsers = () => <Navigate to={'/users'} />

@@ -1,7 +1,7 @@
 import { SyntheticEvent, useState } from 'react'
 import '../Login.css'
 import axios from 'axios';
-import { Redirect } from 'react-router-dom';
+import { Navigate } from 'react-router-dom';
 
 const Login = () => {
     const [email, setEmail] = useState('');
@@ -22,7 +22,7 @@ const Login = () => {
     }
 
     if (redirect) {
-        return <Redirect to={'/'} />
+        return <Navigate to={'/'} />
     }
 
     return (
