@@ -1,14 +1,14 @@
-import './App.css';
-import Users from './pages/Users';
-import Login from './pages/Login';
-import Register from './pages/Register';
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
-import { RedirectToUsers } from './components/RedirectToUsers';
-import Links from './pages/Links';
-import Products from './pages/products/Products';
-import ProductForm from './pages/products/ProductForm';
-import Orders from './pages/Orders';
-import Profile from './pages/Profile';
+import "./App.css";
+import Users from "./pages/Users";
+import Login from "./pages/Login";
+import Register from "./pages/Register";
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import { RedirectToUsers } from "./components/RedirectToUsers";
+import Links from "./pages/Links";
+import Products from "./pages/products/Products";
+import ProductForm from "./pages/products/ProductForm";
+import Orders from "./pages/Orders";
+import Profile from "./pages/Profile";
 
 function App() {
   return (

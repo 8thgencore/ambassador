@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink } from "react-router-dom";
 
 const Menu = () => {
   return (
@@ -38,7 +38,7 @@ const Menu = () => {
         </ul>
       </div>
     </nav>
-  )
-}
+  );
+};
 
-export default Menu
+export default Menu;
