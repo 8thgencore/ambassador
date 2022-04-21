@@ -52,7 +52,7 @@ const ProductForm = () => {
     return (
         <Layout>
             <form onSubmit={submit}>
-                <h2>Add new product</h2>
+                <h3>Add new product</h3>
                 <div className="mb-3">
                     <TextField
                         label="Title"
