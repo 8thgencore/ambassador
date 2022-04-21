@@ -1,6 +1,5 @@
 import {
     Button,
-    Divider,
     Stack,
     Table,
     TableBody,
@@ -38,6 +37,12 @@ const Products = () => {
 
     return (
         <Layout>
+            <div className="pt-3 pb-2 mb-3 border-button">
+                <Button href={"/products/create"} variant="contained" color="primary">
+                    Add
+                </Button>
+            </div>
+
             <Table>
                 <TableHead>
                     <TableRow>
@@ -54,7 +59,7 @@ const Products = () => {
                         return (
                             <TableRow key={product.id}>
                                 <TableCell>{product.id}</TableCell>
-                                <TableCell><img src={product.image} width={50} /></TableCell>
+                                <TableCell><img src={product.image} width={50} alt='product'/></TableCell>
                                 <TableCell>{product.title}</TableCell>
                                 <TableCell>{product.description}</TableCell>
                                 <TableCell>$ {product.price}</TableCell>
