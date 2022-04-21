@@ -7,6 +7,7 @@ import { RedirectToUsers } from './components/RedirectToUsers';
 import Links from './pages/Links';
 import Products from './pages/products/Products';
 import ProductForm from './pages/products/ProductForm';
+import Orders from './pages/Orders';
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path={"/products"} element={<Products />} />
           <Route path={"/products/create"} element={<ProductForm />} />
           <Route path={"/products/:id/edit"} element={<ProductForm />} />
+          <Route path={"/orders"} element={<Orders />} />
         </Routes>
       </BrowserRouter>
     </div>
