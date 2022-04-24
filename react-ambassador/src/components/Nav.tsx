@@ -1,78 +1,86 @@
-import React from "react";
+import axios from "axios";
+import React, { Dispatch } from "react";
+import { connect } from "react-redux";
+import { Link, NavLink } from "react-router-dom";
+import { User } from "../models/user";
+import { setUser } from "../redux/actions/setUserAction";
 
-const Nav = () => {
+const Nav = (props: any) => {
+  const logout = async () => {
+    await axios.get("logout");
+    console.log(123123213);
+    props.setUser(null);
+  };
+
+  let menu;
+
+  if (props.user?.id) {
+    menu = (
+      <div className="col-md-6 text-end">
+        <Link to={"/rangkings "} className="btn me-2">
+          Rankings
+        </Link>
+        <Link to={"/stats"} className="btn me-2">
+          Stats
+        </Link>
+        <a href="#" className="btn btn-outline-primary me-2" onClick={logout}>
+          Logout
+        </a>
+        <Link to={"/profile"} className="btn btn-primary">
+          {props.user.first_name} {props.user.last_name}
+        </Link>
+      </div>
+    );
+  } else {
+    menu = (
+      <div className="col-md-6 text-end">
+        <Link to={"/login"} className="btn btn-outline-primary me-2">
+          Login
+        </Link>
+        <Link to={"/register"} className="btn btn-primary">
+          Sign-up
+        </Link>
+      </div>
+    );
+  }
+
   return (
-    <header>
-      <div className="collapse bg-dark" id="navbarHeader">
-        <div className="container">
-          <div className="row">
-            <div className="col-sm-8 col-md-7 py-4">
-              <h4 className="text-white">About</h4>
-              <p className="text-muted">
-                Add some information about the album below, the author, or any other background
-                context. Make it a few sentences long so folks can pick up some informative tidbits.
-                Then, link them off to some social networking sites or contact information.
-              </p>
-            </div>
-            <div className="col-sm-4 offset-md-1 py-4">
-              <h4 className="text-white">Contact</h4>
-              <ul className="list-unstyled">
-                <li>
-                  <a href="#" className="text-white">
-                    Follow on Twitter
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-white">
-                    Like on Facebook
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="text-white">
-                    Email me
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div className="navbar navbar-dark bg-dark shadow-sm">
-        <div className="container">
-          <a href="#" className="navbar-brand d-flex align-items-center">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              fill="none"
-              stroke="currentColor"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              stroke-width="2"
-              aria-hidden="true"
-              className="me-2"
-              viewBox="0 0 24 24"
+    <div className="container">
+      <header className="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <ul className="nav col-12 col-md-auto mb-2 justify-content-center mb-md-0">
+          <li>
+            <NavLink
+              to="/"
+              className={(isActive) =>
+                "nav-link px-2 link-secondary" + (!isActive ? " link-dark" : "")
+              }
             >
-              <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" />
-              <circle cx="12" cy="13" r="4" />
-            </svg>
-            <strong>Album</strong>
-          </a>
-          <button
-            className="navbar-toggler"
-            type="button"
-            data-bs-toggle="collapse"
-            data-bs-target="#navbarHeader"
-            aria-controls="navbarHeader"
-            aria-expanded="false"
-            aria-label="Toggle navigation"
-          >
-            <span className="navbar-toggler-icon"></span>
-          </button>
-        </div>
-      </div>
-    </header>
+              Frontend
+            </NavLink>
+          </li>
+          <li>
+            <NavLink
+              to={"/backend"}
+              className={(isActive) =>
+                "nav-link px-2 link-secondary " + (!isActive ? " link-dark" : "")
+              }
+            >
+              Backend
+            </NavLink>
+          </li>
+        </ul>
+
+        {menu}
+      </header>
+    </div>
   );
 };
 
-export default Nav;
+export default connect(
+  (state: { user: User }) => ({
+    user: state.user,
+  }),
+  (dispatch: Dispatch<any>) => ({
+    setUser: (user: User) => dispatch(setUser(user)),
+  })
+)(Nav);
