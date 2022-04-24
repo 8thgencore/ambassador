@@ -1,5 +1,5 @@
 import axios from "axios";
-import React, { Dispatch } from "react";
+import { Dispatch } from "react";
 import { connect } from "react-redux";
 import { Link, NavLink } from "react-router-dom";
 import { User } from "../models/user";
