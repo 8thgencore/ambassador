@@ -17,7 +17,7 @@ const Nav = (props: any) => {
   if (props.user?.id) {
     menu = (
       <div className="col-md-6 text-end">
-        <Link to={"/rangkings "} className="btn me-2">
+        <Link to={"/rankings "} className="btn me-2">
           Rankings
         </Link>
         <Link to={"/stats"} className="btn me-2">
