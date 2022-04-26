@@ -8,7 +8,6 @@ import { setUser } from "../redux/actions/setUserAction";
 const Nav = (props: any) => {
   const logout = async () => {
     await axios.get("logout");
-    console.log(123123213);
     props.setUser(null);
   };
 
