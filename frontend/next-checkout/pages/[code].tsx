@@ -1,17 +1,14 @@
 import Head from "next/head";
+import { useRouter } from "next/router";
+import Layout from "../components/Layout";
 import styles from "../styles/Home.module.css";
 
 export default function Home() {
+  const router = useRouter();
+  const { code } = router.query;
+
   return (
-    <>
-      <Head>
-        <link
-          href="https://getbootstrap.com/docs/5.1/dist/css/bootstrap.min.css"
-          rel="stylesheet"
-          integrity="sha384-1BmE4kWBq78iYhFldvKuhfTAU6auU8tT94WrHftjDbrCEXSU1oBoqyl2QvZ6jIW3"
-          crossOrigin="anonymous"
-        />
-      </Head>
+    <Layout>
       <div className="container">
         <main>
           <div className="py-5 text-center">
@@ -128,6 +125,6 @@ export default function Home() {
           </div>
         </main>
       </div>
-    </>
+    </Layout>
   );
 }
