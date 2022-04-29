@@ -3,11 +3,12 @@ version: '3.9'
 services:
   backend:
     container_name: go-ambassador-backend
-    build: .
+    restart: unless-stopped
+    build: ./backend
     ports:
       - 8000:8000
     volumes:
-      - .:/app
+      - ./backend:/app
     depends_on:
       - db
       - redis
@@ -22,7 +23,7 @@ services:
       MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - .dbdata:/var/lib/mysql
+      - ./backend/.dbdata:/var/lib/mysql
     ports:
       - 33066:3306
 
@@ -32,3 +33,39 @@ services:
     restart: unless-stopped
     ports:
       - 6379:6379
+
+  admin:
+    container_name: react-admin
+    restart: unless-stopped
+    build:
+      context: ./frontend/react-admin
+    volumes:
+      - ./frontend/react-admin:/usr/src/app
+    command: >
+      sh -c "yarn start"
+    ports:
+      - 3010:3000
+
+  ambassador:
+    container_name: react-ambassador
+    restart: unless-stopped
+    build:
+      context: ./frontend/react-ambassador
+    volumes:
+      - ./frontend/react-ambassador:/usr/src/app
+    command: >
+      sh -c "yarn start"
+    ports:
+      - 4010:3000
+
+  checkout:
+    container_name: nextjs-checkout
+    restart: unless-stopped
+    build:
+      context: ./frontend/next-checkout
+    volumes:
+      - ./frontend/next-checkout:/usr/src/app
+    command: >
+      sh -c "npm run dev"
+    ports:
+      - 5010:3000
