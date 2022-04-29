@@ -1,11 +1,85 @@
-import Head from "next/head";
+import axios from "axios";
 import { useRouter } from "next/router";
+import { SyntheticEvent, useEffect, useState } from "react";
 import Layout from "../components/Layout";
-import styles from "../styles/Home.module.css";
+import constants from "../constants";
+
+declare var Stripe;
 
 export default function Home() {
   const router = useRouter();
   const { code } = router.query;
+  const [user, setUser] = useState(null);
+  const [products, setProducts] = useState([]);
+  const [quantities, setQuantities] = useState([]);
+  const [first_name, setFirstName] = useState("");
+  const [last_name, setLastName] = useState("");
+  const [email, setEmail] = useState("");
+  const [address, setAddress] = useState("");
+  const [country, setCountry] = useState("");
+  const [city, setCity] = useState("");
+  const [zip, setZip] = useState("");
+
+  useEffect(() => {
+    if (code != undefined) {
+      (async () => {
+        const { data } = await axios.get(`${constants.endpoint}/links/${code}`);
+
+        setUser(data.user);
+        setProducts(data.products);
+        setQuantities(
+          data.products.map((p) => ({
+            product_id: p.id,
+            quantity: 0,
+          }))
+        );
+      })();
+    }
+  }, [code]);
+
+  const change = (id: number, quantity: number) => {
+    setQuantities(
+      quantities.map((q) => {
+        if (q.product_id === id) {
+          return {
+            ...q,
+            quantity,
+          };
+        }
+
+        return q;
+      })
+    );
+  };
+
+  const total = () => {
+    return quantities.reduce((s, q) => {
+      const product = products.find((p) => p.id === q.product_id);
+
+      return s + product.price * q.quantity;
+    }, 0);
+  };
+
+  const submit = async (e: SyntheticEvent) => {
+    e.preventDefault();
+
+    const { data } = await axios.post(`${constants.endpoint}/orders`, {
+      first_name,
+      last_name,
+      email,
+      address,
+      country,
+      city,
+      zip,
+      code,
+      products: quantities,
+    });
+
+    const stripe = new Stripe(constants.stripe_key);
+    stripe.redirectToCheckout({
+      sessionId: data.id,
+    });
+  };
 
   return (
     <Layout>
@@ -13,33 +87,52 @@ export default function Home() {
         <main>
           <div className="py-5 text-center">
             <h2>Welcome</h2>
-            <p className="lead">has invited you yo buy these products!</p>
+            <p className="lead">
+              {user?.first_name} {user?.last_name} has invited you yo buy these products!
+            </p>
           </div>
-
           <div className="row g-5">
             <div className="col-md-5 col-lg-4 order-md-last">
               <h4 className="d-flex justify-content-between align-items-center mb-3">
-                <span className="text-primary">Your cart</span>
-                <span className="badge bg-primary rounded-pill">3</span>
+                <span className="text-primary">Products</span>
               </h4>
               <ul className="list-group mb-3">
-                <li className="list-group-item d-flex justify-content-between lh-sm">
-                  <div>
-                    <h6 className="my-0">Product name</h6>
-                    <small className="text-muted">Brief description</small>
-                  </div>
-                  <span className="text-muted">$12</span>
-                </li>
+                {products.map((product) => {
+                  return (
+                    <div key={product.id}>
+                      <li className="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                          <h6 className="my-0">{product.title}</h6>
+                          <small className="text-muted">{product.description}</small>
+                        </div>
+                        <span className="text-muted">${product.price}</span>
+                      </li>
+                      <li className="list-group-item d-flex justify-content-between lh-sm">
+                        <div>
+                          <h6 className="my-0">Quantity</h6>
+                        </div>
+                        <input
+                          type="number"
+                          min="0"
+                          className="text-muted form-control"
+                          style={{ width: "65px" }}
+                          onChange={(e) => change(product.id, parseInt(e.target.value))}
+                        />
+                      </li>
+                    </div>
+                  );
+                })}
+
                 <li className="list-group-item d-flex justify-content-between">
                   <span>Total (USD)</span>
-                  <strong>$20</strong>
+                  <strong>${total()}</strong>
                 </li>
               </ul>
             </div>
 
             <div className="col-md-7 col-lg-8">
               <h4 className="mb-3">Personal Info</h4>
-              <form className="needs-validation" noValidate>
+              <form className="needs-validation" onSubmit={submit}>
                 <div className="row g-3">
                   <div className="col-sm-6">
                     <label htmlFor="firstName" className="form-label">
@@ -51,6 +144,7 @@ export default function Home() {
                       id="firstName"
                       placeholder="First Name"
                       required
+                      onChange={(e) => setFirstName(e.target.value)}
                     />
                   </div>
 
@@ -64,6 +158,7 @@ export default function Home() {
                       id="lastName"
                       placeholder="Last name"
                       required
+                      onChange={(e) => setLastName(e.target.value)}
                     />
                   </div>
 
@@ -77,6 +172,7 @@ export default function Home() {
                       id="email"
                       placeholder="you@example.com"
                       required
+                      onChange={(e) => setEmail(e.target.value)}
                     />
                   </div>
 
@@ -90,6 +186,7 @@ export default function Home() {
                       id="address"
                       placeholder="1234 Main St"
                       required
+                      onChange={(e) => setAddress(e.target.value)}
                     />
                   </div>
 
@@ -97,21 +194,37 @@ export default function Home() {
                     <label htmlFor="country" className="form-label">
                       Country
                     </label>
-                    <input className="form-select" id="country" placeholder="Country" />
+                    <input
+                      className="form-select"
+                      id="country"
+                      placeholder="Country"
+                      onChange={(e) => setCountry(e.target.value)}
+                    />
                   </div>
 
                   <div className="col-md-4">
                     <label htmlFor="state" className="form-label">
                       City
                     </label>
-                    <input className="form-select" id="city" placeholder="City" />
+                    <input
+                      className="form-select"
+                      id="city"
+                      placeholder="City"
+                      onChange={(e) => setCity(e.target.value)}
+                    />
                   </div>
 
                   <div className="col-md-3">
                     <label htmlFor="zip" className="form-label">
                       Zip
                     </label>
-                    <input type="text" className="form-control" id="zip" placeholder="Zip" />
+                    <input
+                      type="text"
+                      className="form-control"
+                      id="zip"
+                      placeholder="Zip"
+                      onChange={(e) => setZip(e.target.value)}
+                    />
                   </div>
                 </div>
 
