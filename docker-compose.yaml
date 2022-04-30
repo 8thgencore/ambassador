@@ -56,7 +56,7 @@ services:
     command: >
       sh -c "yarn start"
     ports:
-      - 4010:3000
+      - 4010:4000
 
   checkout:
     container_name: nextjs-checkout
@@ -68,4 +68,4 @@ services:
     command: >
       sh -c "npm run dev"
     ports:
-      - 5010:3000
+      - 5010:5000

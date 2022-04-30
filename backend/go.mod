@@ -21,6 +21,7 @@ require (
 	github.com/ian-kent/linkio v0.0.0-20170807205755-97566b872887 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
+	github.com/joho/godotenv v1.4.0 // indirect
 	github.com/klauspost/compress v1.15.0 // indirect
 	github.com/mailhog/MailHog v1.0.1 // indirect
 	github.com/mailhog/MailHog-Server v1.0.1 // indirect
