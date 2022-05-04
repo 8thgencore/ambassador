@@ -23,7 +23,7 @@ services:
       MYSQL_PASSWORD: admin
       MYSQL_ROOT_PASSWORD: root
     volumes:
-      - ./backend/.dbdata:/var/lib/mysql
+      - mysql_data:/var/lib/mysql
     ports:
       - 33066:3306
 
@@ -69,3 +69,6 @@ services:
       sh -c "npm run dev"
     ports:
       - 5010:5000
+
+volumes:
+  mysql_data:

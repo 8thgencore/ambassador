@@ -6,9 +6,10 @@ CMD ["/bin/sh"]
 # set working directory
 WORKDIR /usr/src/app
 
-RUN apk update && \
-    npm install -g create-react-app
-    
+# install app dependencies
 COPY package.json ./
+COPY package-lock.json ./
 
-RUN npm install
+RUN npm install -g npm@8.8.0
+RUN npm install --silent \
+    npm install react-scripts@5.0.1 -g --silent
